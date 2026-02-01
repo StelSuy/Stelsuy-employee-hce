@@ -2,58 +2,45 @@ package com.stelsuy.employee.hce
 
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
-import java.nio.charset.Charset
 
 class NfcCardService : HostApduService() {
 
-    // AID из apduservice.xml: F0010203040506
     private val aid = "F0010203040506"
 
-    // Команды:
-    // GET EMP: 00 CA 00 00 00
     private val getEmpCmd = hex("00CA000000")
-
-    // GET PUBKEY: 00 CC 00 00 00
     private val getPubCmd = hex("00CC000000")
-
-    // SIGN CHALLENGE: 00 CB <challenge bytes...>
     private val signCmdPrefix = byteArrayOf(0x00, 0xCB.toByte())
 
     private val swOk = hex("9000")
     private val swUnknown = hex("6F00")
     private val swWrong = hex("6A82")
 
+    override fun onCreate() {
+        super.onCreate()
+        // щоб ключ точно існував
+        try { Crypto.ensureKey() } catch (_: Exception) {}
+    }
+
     override fun processCommandApdu(commandApdu: ByteArray?, extras: Bundle?): ByteArray {
         if (commandApdu == null) return swUnknown
 
         // SELECT AID
-        if (isSelectAid(commandApdu)) {
-            return swOk
-        }
+        if (isSelectAid(commandApdu)) return swOk
 
         // GET EMP
         if (commandApdu.contentEquals(getEmpCmd)) {
-            if (!Prefs.isEnabled(this)) {
-                val payload = "DISABLED".toByteArray(Charset.forName("UTF-8"))
-                return payload + swOk
-            }
+            if (!Prefs.isEnabled(this)) return "DISABLED".toByteArray(Charsets.UTF_8) + swOk
 
             val empId = Prefs.getOrCreateEmployeeId(this)
-            val payload = "EMP:$empId".toByteArray(Charsets.UTF_8)
-            return payload + swOk
+            return "EMP:$empId".toByteArray(Charsets.UTF_8) + swOk
         }
 
         // GET PUBLIC KEY
         if (commandApdu.contentEquals(getPubCmd)) {
-            if (!Prefs.isEnabled(this)) {
-                val payload = "DISABLED".toByteArray(Charset.forName("UTF-8"))
-                return payload + swOk
-            }
+            if (!Prefs.isEnabled(this)) return "DISABLED".toByteArray(Charsets.UTF_8) + swOk
 
-            Crypto.ensureKey()
             val pub = Crypto.publicKeyB64()
-            val payload = "PUB:$pub".toByteArray(Charsets.UTF_8)
-            return payload + swOk
+            return "PUB:$pub".toByteArray(Charsets.UTF_8) + swOk
         }
 
         // SIGN CHALLENGE
@@ -61,17 +48,12 @@ class NfcCardService : HostApduService() {
             commandApdu[0] == signCmdPrefix[0] &&
             commandApdu[1] == signCmdPrefix[1]
         ) {
-            if (!Prefs.isEnabled(this)) {
-                val payload = "DISABLED".toByteArray(Charset.forName("UTF-8"))
-                return payload + swOk
-            }
+            if (!Prefs.isEnabled(this)) return "DISABLED".toByteArray(Charsets.UTF_8) + swOk
 
             return try {
                 val challenge = commandApdu.copyOfRange(2, commandApdu.size)
-                Crypto.ensureKey()
                 val signatureB64 = Crypto.sign(challenge)
-                val payload = signatureB64.toByteArray(Charsets.UTF_8)
-                payload + swOk
+                signatureB64.toByteArray(Charsets.UTF_8) + swOk
             } catch (_: Exception) {
                 swWrong
             }
