@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Employee HCE</string>
+    <string name="hce_service_desc">Employee NFC pass (HCE)</string>
+    <string name="aid_group_desc">Employee pass AID group</string>
+</resources>
