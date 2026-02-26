@@ -1,7 +1,12 @@
 package com.stelsuy.employee.hce
 
+import android.content.Context
 import android.nfc.cardemulation.HostApduService
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 
 class NfcCardService : HostApduService() {
 
@@ -53,6 +58,7 @@ class NfcCardService : HostApduService() {
             return try {
                 val challenge = commandApdu.copyOfRange(2, commandApdu.size)
                 val signatureB64 = Crypto.sign(challenge)
+                vibrate() // зворотній зв'язок: підпис виконано
                 signatureB64.toByteArray(Charsets.UTF_8) + swOk
             } catch (_: Exception) {
                 swWrong
@@ -63,6 +69,31 @@ class NfcCardService : HostApduService() {
     }
 
     override fun onDeactivated(reason: Int) {}
+
+    /**
+     * Коротка вібрація для зворотного зв'язку при скануванні.
+     */
+    private fun vibrate() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                vm?.defaultVibrator?.vibrate(
+                    VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                val v = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v?.vibrate(
+                        VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE)
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    v?.vibrate(150)
+                }
+            }
+        } catch (_: Exception) {}
+    }
 
     private fun isSelectAid(apdu: ByteArray): Boolean {
         if (apdu.size < 6) return false
