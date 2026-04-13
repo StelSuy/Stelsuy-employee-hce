@@ -191,7 +191,7 @@ The **public key** (DER-encoded, Base64) is shared with the server during regist
 
 ### Огляд
 
-**Stelsuy Employee HCE** — Android-додаток, що перетворює телефон співробітника на безконтактну NFC смарт-картку за допомогою **Host-based Card Emulation (HCE)**. При піднесенні телефону до терміналу [Stelsuy Terminal](https://github.com/your-org/stelsuy-terminal-android) додаток відповідає на APDU-команди — надає унікальний ідентифікатор, публічний ключ і криптографічні підписи.
+**Stelsuy Employee HCE** — Android-додаток, що перетворює телефон співробітника на безконтактну NFC смарт-картку за допомогою **Host-based Card Emulation (HCE)**. При піднесенні телефону до терміналу [Stelsuy Terminal](https://github.com/StelSuy/Stelsuy-terminal-android), додаток відповідає на APDU-команди — надає унікальний ідентифікатор, публічний ключ і криптографічні підписи.
 
 Приватний RSA-ключ **ніколи не покидає пристрій** — він зберігається в **Android Keystore** і захищений апаратним безпечним елементом (TEE / StrongBox).
 
