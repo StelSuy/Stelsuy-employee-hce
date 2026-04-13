@@ -235,5 +235,5 @@ git clone https://github.com/your-org/stelsuy-employee-hce.git
 ---
 
 <p align="center">
-  Розроблено як частина дипломного проєкту · 2024–2025
+  Розроблено як частина дипломного проєкту · 2026
 </p>
