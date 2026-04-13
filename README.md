@@ -24,7 +24,7 @@
 
 ### Overview
 
-**Stelsuy Employee HCE** is an Android application that uses **Host-based Card Emulation (HCE)** to make the employee's phone behave exactly like a contactless NFC smart card. When the phone is tapped against the [Stelsuy Terminal](https://github.com/your-org/stelsuy-terminal-android), it responds to APDU commands — providing the employee's unique ID, public key, and cryptographic signatures — all without any internet connection on the employee's side.
+**Stelsuy Employee HCE** is an Android application that uses **Host-based Card Emulation (HCE)** to make the employee's phone behave exactly like a contactless NFC smart card. When the phone is tapped against the [Stelsuy Terminal](https://github.com/StelSuy/Stelsuy-terminal-android), it responds to APDU commands — providing the employee's unique ID, public key, and cryptographic signatures — all without any internet connection on the employee's side.
 
 The private RSA key **never leaves the device**. It is generated and stored inside the **Android Keystore**, which is hardware-backed on devices with a secure element (TEE / StrongBox).
 
@@ -182,8 +182,8 @@ The **public key** (DER-encoded, Base64) is shared with the server during regist
 
 | Repository | Description |
 |---|---|
-| [stelsuy-backend](https://github.com/your-org/stelsuy-backend) | FastAPI backend — attendance server |
-| [stelsuy-terminal-android](https://github.com/your-org/stelsuy-terminal-android) | Android NFC terminal (scanner) |
+| [stelsuy-backend](https://github.com/StelSuy/diplom_v2) | FastAPI backend — attendance server |
+| [stelsuy-terminal](https://github.com/StelSuy/Stelsuy-terminal-android) | Android HCE badge app (employee phone) |
 
 ---
 
